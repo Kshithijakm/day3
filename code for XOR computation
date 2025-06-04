@@ -1,0 +1,60 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Sigmoid function
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# Define a perceptron-based logic gate
+def logic_gate(w1, w2, b):
+    return lambda x1, x2: sigmoid(w1 * x1 + w2 * x2 + b)
+
+# Basic gates
+or_gate = logic_gate(20, 20, -10)
+and_gate = logic_gate(20, 20, -30)
+nand_gate = logic_gate(-20, -20, 30)
+
+# XOR gate using basic gates
+def xor_gate(x1, x2):
+    o1 = nand_gate(x1, x2)
+    o2 = or_gate(x1, x2)
+    return and_gate(o1, o2)
+
+# Test data
+inputs = [(0, 0), (0, 1), (1, 0), (1, 1)]
+or_outputs = [np.round(or_gate(x1, x2)) for x1, x2 in inputs]
+xor_outputs = [np.round(xor_gate(x1, x2)) for x1, x2 in inputs]
+
+# Print sample output
+print("Input A, B | OR | XOR")
+print("----------------------")
+for (x1, x2), or_out, xor_out in zip(inputs, or_outputs, xor_outputs):
+    print(f"   {x1}, {x2}    |  {int(or_out)} |  {int(xor_out)}")
+
+# Visualization
+fig, ax = plt.subplots(1, 2, figsize=(10, 4))
+
+# OR gate plot
+ax[0].set_title("OR Gate")
+for (x1, x2), y in zip(inputs, or_outputs):
+    color = 'blue' if y else 'red'
+    ax[0].scatter(x1, x2, c=color, s=100)
+ax[0].set_xlim(-0.5, 1.5)
+ax[0].set_ylim(-0.5, 1.5)
+ax[0].set_xticks([0, 1])
+ax[0].set_yticks([0, 1])
+ax[0].grid(True)
+
+# XOR gate plot
+ax[1].set_title("XOR Gate")
+for (x1, x2), y in zip(inputs, xor_outputs):
+    color = 'blue' if y else 'red'
+    ax[1].scatter(x1, x2, c=color, s=100)
+ax[1].set_xlim(-0.5, 1.5)
+ax[1].set_ylim(-0.5, 1.5)
+ax[1].set_xticks([0, 1])
+ax[1].set_yticks([0, 1])
+ax[1].grid(True)
+
+plt.tight_layout()
+plt.show()
